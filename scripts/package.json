@@ -1,0 +1,15 @@
+{
+  "name": "dynamodb-table-designs-grafana-scripts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "3.1166.0",
+    "@aws-sdk/lib-dynamodb": "3.1166.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.23.0",
+    "typescript": "~7.0.2"
+  }
+}

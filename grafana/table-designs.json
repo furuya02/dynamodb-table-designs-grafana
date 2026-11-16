@@ -1,0 +1,551 @@
+{
+  "uid": "table-designs",
+  "title": "Four table designs (Ductus)",
+  "description": "Four common DynamoDB table designs, read through Ductus without changing the tables",
+  "tags": [
+    "dynamodb-table-designs-grafana",
+    "dynamodb"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": true,
+  "refresh": "",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "(1) Date-split partition key: power",
+      "description": "pk = meter-01#2026-11-16 (JST date), ts = epoch seconds",
+      "type": "timeseries",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "tsapi"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "tsapi"
+          },
+          "type": "json",
+          "source": "url",
+          "parser": "backend",
+          "url": "query",
+          "url_options": {
+            "method": "GET",
+            "data": "",
+            "params": [
+              {
+                "key": "dataset",
+                "value": "power"
+              },
+              {
+                "key": "key",
+                "value": "meter-01,meter-02"
+              },
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "interval",
+                "value": "${__interval_ms}"
+              },
+              {
+                "key": "agg",
+                "value": "avg"
+              },
+              {
+                "key": "fields",
+                "value": "watt"
+              }
+            ]
+          },
+          "root_selector": "rows",
+          "columns": [
+            {
+              "selector": "time",
+              "text": "time",
+              "type": "timestamp_epoch"
+            },
+            {
+              "selector": "key",
+              "text": "key",
+              "type": "string"
+            },
+            {
+              "selector": "watt",
+              "text": "watt",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "format": "timeseries"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "displayName": "${__field.labels.key}",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "(2) Single-table design: temperature (TEMP#)",
+      "description": "pk = room#a, sk = TEMP#2026-11-16T00:00:00Z",
+      "type": "timeseries",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "tsapi"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "tsapi"
+          },
+          "type": "json",
+          "source": "url",
+          "parser": "backend",
+          "url": "query",
+          "url_options": {
+            "method": "GET",
+            "data": "",
+            "params": [
+              {
+                "key": "dataset",
+                "value": "room_temp"
+              },
+              {
+                "key": "key",
+                "value": "a,b"
+              },
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "interval",
+                "value": "${__interval_ms}"
+              },
+              {
+                "key": "agg",
+                "value": "avg"
+              },
+              {
+                "key": "fields",
+                "value": "temperature"
+              }
+            ]
+          },
+          "root_selector": "rows",
+          "columns": [
+            {
+              "selector": "time",
+              "text": "time",
+              "type": "timestamp_epoch"
+            },
+            {
+              "selector": "key",
+              "text": "key",
+              "type": "string"
+            },
+            {
+              "selector": "temperature",
+              "text": "temperature",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "format": "timeseries"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "displayName": "${__field.labels.key}",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "(3) ISO 8601 without time zone: production count",
+      "description": "ts = 2026-11-16T09:00:00 (JST wall clock)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "tsapi"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "tsapi"
+          },
+          "type": "json",
+          "source": "url",
+          "parser": "backend",
+          "url": "query",
+          "url_options": {
+            "method": "GET",
+            "data": "",
+            "params": [
+              {
+                "key": "dataset",
+                "value": "line_count"
+              },
+              {
+                "key": "key",
+                "value": "line-1,line-2"
+              },
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "interval",
+                "value": "${__interval_ms}"
+              },
+              {
+                "key": "agg",
+                "value": "avg"
+              },
+              {
+                "key": "fields",
+                "value": "count"
+              }
+            ]
+          },
+          "root_selector": "rows",
+          "columns": [
+            {
+              "selector": "time",
+              "text": "time",
+              "type": "timestamp_epoch"
+            },
+            {
+              "selector": "key",
+              "text": "key",
+              "type": "string"
+            },
+            {
+              "selector": "count",
+              "text": "count",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "format": "timeseries"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "displayName": "${__field.labels.key}",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "(4) GSI: pump vibration",
+      "description": "Table key = eventId. Read through the GSI byDevice (deviceId + ts)",
+      "type": "timeseries",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "tsapi"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "tsapi"
+          },
+          "type": "json",
+          "source": "url",
+          "parser": "backend",
+          "url": "query",
+          "url_options": {
+            "method": "GET",
+            "data": "",
+            "params": [
+              {
+                "key": "dataset",
+                "value": "pump_vibration"
+              },
+              {
+                "key": "key",
+                "value": "pump-1,pump-2"
+              },
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "interval",
+                "value": "${__interval_ms}"
+              },
+              {
+                "key": "agg",
+                "value": "avg"
+              },
+              {
+                "key": "fields",
+                "value": "vibration"
+              }
+            ]
+          },
+          "root_selector": "rows",
+          "columns": [
+            {
+              "selector": "time",
+              "text": "time",
+              "type": "timestamp_epoch"
+            },
+            {
+              "selector": "key",
+              "text": "key",
+              "type": "string"
+            },
+            {
+              "selector": "vibration",
+              "text": "vibration",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "format": "timeseries"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "mm/s",
+          "displayName": "${__field.labels.key}",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "(2) Single-table design: humidity (HUM#)",
+      "description": "Same partition as temperature, sort key prefix HUM#",
+      "type": "timeseries",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "tsapi"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "tsapi"
+          },
+          "type": "json",
+          "source": "url",
+          "parser": "backend",
+          "url": "query",
+          "url_options": {
+            "method": "GET",
+            "data": "",
+            "params": [
+              {
+                "key": "dataset",
+                "value": "room_hum"
+              },
+              {
+                "key": "key",
+                "value": "a,b"
+              },
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "interval",
+                "value": "${__interval_ms}"
+              },
+              {
+                "key": "agg",
+                "value": "avg"
+              },
+              {
+                "key": "fields",
+                "value": "humidity"
+              }
+            ]
+          },
+          "root_selector": "rows",
+          "columns": [
+            {
+              "selector": "time",
+              "text": "time",
+              "type": "timestamp_epoch"
+            },
+            {
+              "selector": "key",
+              "text": "key",
+              "type": "string"
+            },
+            {
+              "selector": "humidity",
+              "text": "humidity",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "format": "timeseries"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "humidity",
+          "displayName": "${__field.labels.key}",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    }
+  ]
+}

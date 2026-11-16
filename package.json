@@ -1,0 +1,13 @@
+{
+  "name": "dynamodb-table-designs-grafana",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "cdk-deploy": "pnpm --dir cdk exec cdk deploy",
+    "cdk-destroy": "pnpm --dir cdk exec cdk destroy",
+    "seed": "pnpm --dir scripts exec tsx seed.ts"
+  },
+  "engines": { "node": ">=22", "pnpm": ">=10" },
+  "packageManager": "pnpm@10.24.0"
+}

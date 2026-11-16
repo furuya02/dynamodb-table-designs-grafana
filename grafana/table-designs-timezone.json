@@ -1,0 +1,446 @@
+{
+  "uid": "table-designs-timezone",
+  "title": "Timezone setting comparison (Ductus)",
+  "description": "Same tables read with and without the timezone setting",
+  "tags": [
+    "dynamodb-table-designs-grafana",
+    "dynamodb"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 41,
+  "version": 1,
+  "editable": true,
+  "refresh": "",
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "power: partitionKey.timezone = Asia/Tokyo",
+      "description": "Partition key split by JST date, read as JST",
+      "type": "timeseries",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "tsapi"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "tsapi"
+          },
+          "type": "json",
+          "source": "url",
+          "parser": "backend",
+          "url": "query",
+          "url_options": {
+            "method": "GET",
+            "data": "",
+            "params": [
+              {
+                "key": "dataset",
+                "value": "power"
+              },
+              {
+                "key": "key",
+                "value": "meter-01,meter-02"
+              },
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "interval",
+                "value": "${__interval_ms}"
+              },
+              {
+                "key": "agg",
+                "value": "avg"
+              },
+              {
+                "key": "fields",
+                "value": "watt"
+              }
+            ]
+          },
+          "root_selector": "rows",
+          "columns": [
+            {
+              "selector": "time",
+              "text": "time",
+              "type": "timestamp_epoch"
+            },
+            {
+              "selector": "key",
+              "text": "key",
+              "type": "string"
+            },
+            {
+              "selector": "watt",
+              "text": "watt",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "format": "timeseries"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "displayName": "${__field.labels.key}",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "title": "power_utc: partitionKey.timezone not set (UTC)",
+      "description": "Same table, read as if split by UTC date",
+      "type": "timeseries",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "tsapi"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "tsapi"
+          },
+          "type": "json",
+          "source": "url",
+          "parser": "backend",
+          "url": "query",
+          "url_options": {
+            "method": "GET",
+            "data": "",
+            "params": [
+              {
+                "key": "dataset",
+                "value": "power_utc"
+              },
+              {
+                "key": "key",
+                "value": "meter-01,meter-02"
+              },
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "interval",
+                "value": "${__interval_ms}"
+              },
+              {
+                "key": "agg",
+                "value": "avg"
+              },
+              {
+                "key": "fields",
+                "value": "watt"
+              }
+            ]
+          },
+          "root_selector": "rows",
+          "columns": [
+            {
+              "selector": "time",
+              "text": "time",
+              "type": "timestamp_epoch"
+            },
+            {
+              "selector": "key",
+              "text": "key",
+              "type": "string"
+            },
+            {
+              "selector": "watt",
+              "text": "watt",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "format": "timeseries"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "watt",
+          "displayName": "${__field.labels.key}",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "line_count: sortKey.timezone = Asia/Tokyo",
+      "description": "ISO 8601 without offset, read as JST",
+      "type": "timeseries",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "tsapi"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "tsapi"
+          },
+          "type": "json",
+          "source": "url",
+          "parser": "backend",
+          "url": "query",
+          "url_options": {
+            "method": "GET",
+            "data": "",
+            "params": [
+              {
+                "key": "dataset",
+                "value": "line_count"
+              },
+              {
+                "key": "key",
+                "value": "line-1,line-2"
+              },
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "interval",
+                "value": "${__interval_ms}"
+              },
+              {
+                "key": "agg",
+                "value": "avg"
+              },
+              {
+                "key": "fields",
+                "value": "count"
+              }
+            ]
+          },
+          "root_selector": "rows",
+          "columns": [
+            {
+              "selector": "time",
+              "text": "time",
+              "type": "timestamp_epoch"
+            },
+            {
+              "selector": "key",
+              "text": "key",
+              "type": "string"
+            },
+            {
+              "selector": "count",
+              "text": "count",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "format": "timeseries"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "displayName": "${__field.labels.key}",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "line_count_utc: sortKey.timezone not set (UTC)",
+      "description": "Same table, read as UTC",
+      "type": "timeseries",
+      "datasource": {
+        "type": "yesoreyeram-infinity-datasource",
+        "uid": "tsapi"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "yesoreyeram-infinity-datasource",
+            "uid": "tsapi"
+          },
+          "type": "json",
+          "source": "url",
+          "parser": "backend",
+          "url": "query",
+          "url_options": {
+            "method": "GET",
+            "data": "",
+            "params": [
+              {
+                "key": "dataset",
+                "value": "line_count_utc"
+              },
+              {
+                "key": "key",
+                "value": "line-1,line-2"
+              },
+              {
+                "key": "from",
+                "value": "${__from}"
+              },
+              {
+                "key": "to",
+                "value": "${__to}"
+              },
+              {
+                "key": "interval",
+                "value": "${__interval_ms}"
+              },
+              {
+                "key": "agg",
+                "value": "avg"
+              },
+              {
+                "key": "fields",
+                "value": "count"
+              }
+            ]
+          },
+          "root_selector": "rows",
+          "columns": [
+            {
+              "selector": "time",
+              "text": "time",
+              "type": "timestamp_epoch"
+            },
+            {
+              "selector": "key",
+              "text": "key",
+              "type": "string"
+            },
+            {
+              "selector": "count",
+              "text": "count",
+              "type": "number"
+            }
+          ],
+          "filters": [],
+          "format": "timeseries"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "displayName": "${__field.labels.key}",
+          "custom": {
+            "spanNulls": false,
+            "showPoints": "never"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+# Ductus（dynamodb-timeseries-api）の設定: 4 つのテーブル設計を、テーブルを変えずに Grafana から読む
+# デプロイ: Ductus のディレクトリで pnpm cdk-deploy -c config=<このファイルの絶対パス> -c auth=apiKey
+# 書き方の参考: https://github.com/furuya02/dynamodb-timeseries-api/blob/main/docs/ja/02-datasets.md
+
+datasets:
+  # (1) 日付で分けたキー: pk = meter-01#2026-11-16（JST の日付）、ts = epoch 秒
+  power:
+    description: Power per meter (partition key split by JST date)
+    table: dynamodb-table-designs-grafana-daily-key
+    partitionKey: { name: pk, template: "{key}#{yyyy-MM-dd}", bucket: daily, timezone: Asia/Tokyo }
+    sortKey: { name: ts, format: epoch_s }
+    keys: { values: [meter-01, meter-02] }
+    fields:
+      - { name: watt, unit: watt }
+
+  # 比較用: (1) を timezone の指定なし（既定の UTC）で読む。pnpm init-dataset の下書きのまま
+  power_utc:
+    description: Same table as power, read without partitionKey.timezone (UTC)
+    table: dynamodb-table-designs-grafana-daily-key
+    partitionKey: { name: pk, template: "{key}#{yyyy-MM-dd}", bucket: daily }
+    sortKey: { name: ts, format: epoch_s }
+    keys: { values: [meter-01, meter-02] }
+    fields:
+      - { name: watt, unit: watt }
+
+  # (2) シングルテーブル設計: 同じパーティションの TEMP# と HUM# を、別のデータセットとして読む
+  room_temp:
+    description: Room temperature (single-table design, sort key prefix TEMP#)
+    table: dynamodb-table-designs-grafana-single-table
+    partitionKey: { name: pk, template: "room#{key}" }
+    sortKey: { name: sk, format: iso8601, prefix: "TEMP#" }
+    keys: { values: [a, b] }
+    fields:
+      - { name: value, alias: temperature, unit: celsius }
+
+  room_hum:
+    description: Room humidity (single-table design, sort key prefix HUM#)
+    table: dynamodb-table-designs-grafana-single-table
+    partitionKey: { name: pk, template: "room#{key}" }
+    sortKey: { name: sk, format: iso8601, prefix: "HUM#" }
+    keys: { values: [a, b] }
+    fields:
+      - { name: value, alias: humidity, unit: percent }
+
+  # (3) タイムゾーンなしの ISO 8601: ts = 2026-11-16T09:00:00（JST の時刻）
+  line_count:
+    description: Production count per line (ISO 8601 without offset, JST)
+    table: dynamodb-table-designs-grafana-local-iso
+    partitionKey: { name: deviceId }
+    sortKey: { name: ts, format: iso8601, timezone: Asia/Tokyo }
+    keys: { values: [line-1, line-2] }
+    fields:
+      - { name: count }
+
+  # 比較用: (3) を timezone の指定なし（既定の UTC）で読む
+  line_count_utc:
+    description: Same table as line_count, read without sortKey.timezone (UTC)
+    table: dynamodb-table-designs-grafana-local-iso
+    partitionKey: { name: deviceId }
+    sortKey: { name: ts, format: iso8601 }
+    keys: { values: [line-1, line-2] }
+    fields:
+      - { name: count }
+
+  # (4) GSI: テーブルのキーはイベント ID。GSI byDevice（deviceId + ts）で読む
+  pump_vibration:
+    description: Pump vibration (read through the GSI byDevice)
+    table: dynamodb-table-designs-grafana-events
+    index: byDevice
+    partitionKey: { name: deviceId }
+    sortKey: { name: ts, format: epoch_ms }
+    keys: { values: [pump-1, pump-2] }
+    fields:
+      - { name: vibration, unit: mm/s }
