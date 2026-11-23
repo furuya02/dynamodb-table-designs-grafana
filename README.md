@@ -46,7 +46,7 @@ Clone Ductus into another directory and deploy it with ductus/datasets.yaml from
 
 ```bash
 cd ..
-git clone https://github.com/furuya02/dynamodb-timeseries-api.git
+git clone --branch v0.1.0 https://github.com/furuya02/dynamodb-timeseries-api.git
 cd dynamodb-timeseries-api
 pnpm install
 pnpm cdk-deploy -c config=$(pwd)/../dynamodb-table-designs-grafana/ductus/datasets.yaml -c auth=apiKey
